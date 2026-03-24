@@ -1,70 +1,73 @@
 # ⚡ n8n Dashboard
 
-> A clean, local-first dashboard for **monitoring your n8n instance** without digging through the full editor.
+> A sleek, local-first operational dashboard for **monitoring, reviewing, and controlling your n8n instance** without living inside the full editor.
 
-**Connect in minutes.**
-Just add:
+**Built for builders who want more signal, less digging.**
+
+With only:
 - `N8N_BASE_URL`
 - `N8N_API_KEY`
 
-And get a smoother way to track:
-- ✅ workflow health
-- 📈 recent executions
-- 🚨 failures that need attention
-- 🌙 dark mode / ☀️ light mode
-- 🔐 server-side API key handling
+You get a cleaner way to:
+- ✅ monitor workflow health
+- 📈 inspect recent executions
+- 🚨 catch failures faster
+- 🎛️ activate or deactivate workflows
+- 🔁 retry or stop executions
+- 🌙 work in a polished dark-first UI
 
 ---
 
-## ✨ Why this exists
+## ✨ Why this repo matters
 
-n8n is powerful, but sometimes you do not want to jump straight into the full workflow builder just to answer simple questions like:
+n8n is powerful, but the day-to-day operational experience can still feel heavier than it needs to be.
 
-- Is my instance healthy?
-- Which workflows are active?
-- What failed recently?
-- What needs my attention right now?
+This project focuses on the part that matters most when you are actually running automations:
 
-**n8n Dashboard** is built to be a fast, clean, local-first operational view for your automations.
+- What is active?
+- What failed?
+- What is running right now?
+- What needs attention?
+- What can I do immediately from the dashboard?
 
-It is **not** trying to replace the n8n editor.
-It is built to make monitoring feel lighter, calmer, and faster.
+**n8n Dashboard** is designed to be a calm, modern control layer for your automation engine.
 
 ---
 
 ## 🚀 Features
 
-### Current MVP
+### Current capabilities
 - ⚡ Fast local-first setup
-- 🔗 Connect using only `n8n URL + API key`
-- 🏠 Overview dashboard for quick health checks
-- 🧩 Workflows table for scanning your automations
-- 🧾 Executions table for recent run visibility
-- 🩺 Instance diagnostics view
-- 🌙 Dark / ☀️ light theme toggle
-- 🔐 Tiny local proxy so the API key stays server-side
+- 🔗 Connect with only `n8n URL + API key`
+- 🏠 Dashboard overview with operational KPIs
+- 🧩 Workflows inventory with activate / deactivate actions
+- 🧾 Execution logs with retry / stop actions
+- 🩺 Instance diagnostics
+- 🎨 Dark / light mode
+- 🔐 Server-side API key handling through a local proxy
+- 📘 Project-level `DESIGN.md` for reusable UI direction
 
-### Designed for
+### Built for
+- n8n power users
 - solo builders
 - indie hackers
 - automation operators
-- teams who want a cleaner monitoring layer for n8n
+- developers who want a better operational UI around self-hosted n8n
 
 ---
 
-## 🖼️ Product direction
+## 🖼️ Design direction
 
-This project is designed around a simple idea:
+This repo is intentionally inspired by premium dark operational dashboards:
+- dense but readable
+- strong hierarchy
+- minimal visual noise
+- warm coral action accents
+- fast scanability for failures, workflow state, and execution health
 
-> **Make n8n easier to monitor than to explain.**
+The goal is simple:
 
-That means:
-- less dashboard fluff
-- fewer noisy charts
-- more useful tables
-- better scanability
-- faster triage
-- a setup flow that does not fight you
+> **Make n8n operations feel fast, modern, and actually enjoyable to use.**
 
 ---
 
@@ -73,11 +76,11 @@ That means:
 - **React**
 - **TypeScript**
 - **Vite**
-- **Express** (tiny local proxy)
+- **Express**
 - **TanStack Query**
 
-Simple, boring, reliable.
-Exactly what a local ops dashboard should be.
+Simple enough to run locally.
+Flexible enough to grow.
 
 ---
 
@@ -95,15 +98,14 @@ npm run dev
 Open:
 - `http://localhost:5173`
 
-Ports used:
+Ports:
 - frontend: `5173`
-- local proxy: `3001`
+- proxy: `3001`
 
 ---
 
 ## 🔑 Requirements
 
-You only need:
 - **Node.js 22+**
 - **npm**
 - a reachable **n8n instance**
@@ -112,7 +114,7 @@ You only need:
 
 ---
 
-## ⚙️ Environment setup
+## ⚙️ Environment
 
 Create `.env.local`:
 
@@ -131,14 +133,14 @@ PORT=3001
 - `npm run typecheck` — TypeScript validation
 - `npm run lint` — lint the codebase
 - `npm run verify` — typecheck + build
-- `npm run smoke` — test direct API connectivity to your n8n instance
+- `npm run smoke` — verify direct connectivity to n8n
 
 ---
 
 ## 🔐 Security note
 
-Your `N8N_API_KEY` is meant to stay **server-side** in `.env.local`.
-The frontend talks to the local proxy through `/api`.
+The `N8N_API_KEY` is intended to stay **server-side** in `.env.local`.
+The frontend talks to the local proxy under `/api`.
 
 That means this project is safer than dropping your key directly into a browser-only frontend.
 
@@ -146,40 +148,40 @@ That means this project is safer than dropping your key directly into a browser-
 
 ## 🎯 MVP scope
 
-This version focuses on the essentials:
+This version focuses on practical operations value:
 - connect and validate n8n access
-- home overview
+- overview dashboard
 - workflows table
 - executions table
+- workflow activate / deactivate
+- execution retry / stop
 - instance diagnostics
-- settings with theme toggle
-
-The goal is to ship something **useful immediately**, then expand carefully.
+- theme settings
 
 ---
 
 ## 🧠 Roadmap
 
-Planned improvements:
+Planned upgrades:
 - richer filtering
-- workflow and execution detail drilldowns
-- derived health views
-- retry / stop actions
+- deeper workflow / execution drill-downs
+- stronger health views
+- better timeline and trace surfaces
 - saved views
-- smarter attention surfaces
+- multi-instance support
 
 ---
 
 ## 🤝 Contributing
 
-Ideas, feedback, and pull requests are welcome.
+Ideas, feedback, issues, and pull requests are welcome.
 
-If you use n8n regularly and want a cleaner operational dashboard, this repo is for you.
+If you run n8n in production or for serious side projects, this repo is meant to become a genuinely useful companion tool.
 
 ---
 
-## ⭐ If this helps you
+## ⭐ If you like this project
 
-Give it a star, share it with other n8n builders, and help shape a better local monitoring experience for automations.
+Give it a star, share it with other n8n builders, and help make local-first automation tooling better.
 
-**Less digging. More signal.**
+**Less editor hopping. More operational clarity.**

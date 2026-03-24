@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '../lib/api';
-import { Badge, Card, SectionHeader, StatCard, Topbar } from '../components/ui';
+import { Badge, Button, Card, SectionHeader, StatCard, Topbar } from '../components/ui';
 import { executionStatus, formatTime, workflowStatus } from '../lib/utils';
 
 export function HomePage() {
@@ -10,40 +10,42 @@ export function HomePage() {
   if (error instanceof Error) return <Card>{error.message}</Card>;
   if (!data) return null;
 
-  const attention = data.executions.filter((e) => ['error', 'failed', 'crashed'].includes((e.status || '').toLowerCase())).slice(0, 5);
-  const running = data.executions.filter((e) => (e.status || '').toLowerCase() === 'running').slice(0, 5);
-  const activeWorkflows = data.workflows.filter((w) => w.active).slice(0, 6);
+  const attention = data.executions.filter((e) => ['error', 'failed', 'crashed'].includes((e.status || '').toLowerCase())).slice(0, 4);
+  const recentWorkflows = data.workflows.slice(0, 3);
 
   return (
     <div className="grid">
-      <Topbar title="Home" subtitle={`Last synced ${formatTime(data.lastUpdated)}`} />
-      <div className="grid grid-4">
-        <StatCard label="Workflows" value={data.metrics.totalWorkflows} hint={`${data.metrics.activeWorkflows} active`} />
-        <StatCard label="Failed runs" value={data.metrics.failedExecutions} hint="Current fetch window" />
-        <StatCard label="Running now" value={data.metrics.runningExecutions} hint={`${data.metrics.waitingExecutions} waiting`} />
-        <StatCard label="Success rate" value={`${data.metrics.successRate}%`} hint="Derived from recent executions" />
+      <Topbar
+        title="Dashboard Overview"
+        subtitle="System status and execution metrics for your n8n instance."
+        actions={
+          <div className="actions">
+            <Button>Last 24 Hours</Button>
+            <Button className="primary">Refresh Data</Button>
+          </div>
+        }
+      />
+
+      <div className="hero-strip">
+        <div>
+          <strong>Engine online</strong>
+          <div className="muted small">A local-first monitoring view with fast operational drill-downs.</div>
+        </div>
+        <Badge label="Connected" />
       </div>
+
+      <div className="grid grid-4">
+        <StatCard label="Success Rate" value={`${data.metrics.successRate}%`} hint="Based on fetched executions" />
+        <StatCard label="Total Executions" value={data.metrics.totalExecutions} hint={`${data.metrics.failedExecutions} failed`} />
+        <StatCard label="Active Workflows" value={data.metrics.activeWorkflows} hint={`${data.metrics.totalWorkflows} total`} />
+        <StatCard label="Running Now" value={data.metrics.runningExecutions} hint={`${data.metrics.waitingExecutions} waiting`} />
+      </div>
+
       <div className="grid grid-2">
         <Card>
-          <SectionHeader title="Needs attention" subtitle="Recent failures that likely need triage." action={<Badge label={attention.length ? 'Attention' : 'Healthy'} />} />
+          <SectionHeader title="Recent Workflows" subtitle="A quick scan of what matters most right now." action={<a className="button" href="/workflows">View All</a>} />
           <div className="stack">
-            {attention.length ? attention.map((item) => (
-              <div key={String(item.id)} className="surface">
-                <div className="split">
-                  <div>
-                    <strong>Execution #{item.id}</strong>
-                    <div className="muted small">Workflow {item.workflowId || 'Unknown'} • {formatTime(item.startedAt)}</div>
-                  </div>
-                  <Badge label={executionStatus(item)} />
-                </div>
-              </div>
-            )) : <p className="muted">No recent failures surfaced in the latest fetch.</p>}
-          </div>
-        </Card>
-        <Card>
-          <SectionHeader title="Active workflows" subtitle="A quick view of currently enabled automations." action={<Badge label="Live" />} />
-          <div className="stack">
-            {activeWorkflows.map((workflow) => (
+            {recentWorkflows.map((workflow) => (
               <div key={workflow.id} className="surface">
                 <div className="split">
                   <div>
@@ -56,29 +58,20 @@ export function HomePage() {
             ))}
           </div>
         </Card>
-      </div>
-      <div className="grid grid-2">
         <Card>
-          <SectionHeader title="Running now" subtitle="Useful for checking what is currently in flight." />
-          <div className="list">
-            {running.length ? running.map((item) => (
-              <div key={String(item.id)} className="row">
-                <div>
-                  <strong>Execution #{item.id}</strong>
-                  <div className="muted small">Workflow {item.workflowId || 'Unknown'}</div>
+          <SectionHeader title="Needs Attention" subtitle="Recent failures and unhealthy signals worth checking." />
+          <div className="stack">
+            {attention.length ? attention.map((item) => (
+              <div key={String(item.id)} className="surface">
+                <div className="split">
+                  <div>
+                    <strong>Execution #{item.id}</strong>
+                    <div className="muted small">Workflow {item.workflowId || 'Unknown'} • {formatTime(item.startedAt)}</div>
+                  </div>
+                  <Badge label={executionStatus(item)} />
                 </div>
-                <Badge label={executionStatus(item)} />
               </div>
-            )) : <p className="muted">No executions are currently running.</p>}
-          </div>
-        </Card>
-        <Card>
-          <SectionHeader title="State summary" subtitle="A calm snapshot of the instance right now." />
-          <div className="list">
-            <div className="row"><span>Archived workflows</span><strong>{data.metrics.archivedWorkflows}</strong></div>
-            <div className="row"><span>Total executions fetched</span><strong>{data.metrics.totalExecutions}</strong></div>
-            <div className="row"><span>Waiting executions</span><strong>{data.metrics.waitingExecutions}</strong></div>
-            <div className="row"><span>Last refresh</span><strong>{formatTime(data.lastUpdated)}</strong></div>
+            )) : <p className="muted">No recent failures surfaced in the latest fetch.</p>}
           </div>
         </Card>
       </div>

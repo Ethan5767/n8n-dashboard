@@ -24,12 +24,14 @@ export function ExecutionsPage() {
 
   return (
     <div className="grid">
-      <Topbar title="Executions" subtitle="Triage recent runs, retry failures, and stop what should not keep running." />
+      <Topbar title="Execution Logs" subtitle="Monitor and debug your automated workflows across the latest execution window." />
       <div className="grid grid-3">
         <Card className="grid" style={{ gridColumn: 'span 2' }}>
-          <SectionHeader title="Recent executions" subtitle="Search by execution id, workflow id, or status." />
+          <SectionHeader title="Execution inventory" subtitle="Fast status scanning with lightweight actions." />
           <div className="toolbar">
             <Input placeholder="Search executions" value={query} onChange={(e) => setQuery(e.target.value)} />
+            <Button>All Workflows</Button>
+            <Button>Last 24 Hours</Button>
           </div>
           {isLoading ? <p>Loading executions…</p> : error instanceof Error ? <p>{error.message}</p> : (
             <div className="table-wrap">
@@ -37,23 +39,21 @@ export function ExecutionsPage() {
                 <thead>
                   <tr>
                     <th>ID</th>
-                    <th>Workflow</th>
+                    <th>Workflow Name</th>
                     <th>Status</th>
                     <th>Mode</th>
                     <th>Started</th>
-                    <th>Stopped</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filtered.map((execution) => (
                     <tr key={String(execution.id)}>
-                      <td><button className="button" onClick={() => setSelected(execution)}>{execution.id}</button></td>
-                      <td>{execution.workflowId || '—'}</td>
+                      <td><button className="button" onClick={() => setSelected(execution)}>#EXE-{execution.id}</button></td>
+                      <td>{execution.workflowId || 'Unknown workflow'}</td>
                       <td><Badge label={executionStatus(execution)} /></td>
                       <td>{execution.mode || '—'}</td>
                       <td>{formatTime(execution.startedAt)}</td>
-                      <td>{formatTime(execution.stoppedAt)}</td>
                       <td>
                         <div className="actions">
                           <Button className="success" onClick={() => retryMutation.mutate(String(execution.id))}>Retry</Button>
@@ -68,20 +68,36 @@ export function ExecutionsPage() {
           )}
         </Card>
         <Card>
-          <SectionHeader title="Execution detail" subtitle="Quick drill-down without leaving the page." />
+          <SectionHeader title="Execution Details" subtitle="Context-first drill-down for the selected run." />
           {selected ? (
             <div className="stack">
               <div className="surface">
-                <strong>Execution #{selected.id}</strong>
-                <div className="muted small">Workflow {selected.workflowId || 'Unknown'}</div>
+                <div className="grid grid-2">
+                  <div>
+                    <div className="muted small">Execution ID</div>
+                    <strong>#EXE-{selected.id}</strong>
+                  </div>
+                  <div>
+                    <div className="muted small">Duration</div>
+                    <strong>{selected.startedAt && selected.stoppedAt ? 'Completed' : 'In progress'}</strong>
+                  </div>
+                </div>
               </div>
-              <div className="row"><span>Status</span><Badge label={executionStatus(selected)} /></div>
-              <div className="row"><span>Mode</span><strong>{selected.mode || '—'}</strong></div>
-              <div className="row"><span>Started</span><strong>{formatTime(selected.startedAt)}</strong></div>
-              <div className="row"><span>Stopped</span><strong>{formatTime(selected.stoppedAt)}</strong></div>
+              <div className="surface">
+                <strong>{executionStatus(selected) === 'error' ? 'Workflow issue detected' : 'Execution status'}</strong>
+                <div className="muted small" style={{ marginTop: 8 }}>
+                  Workflow {selected.workflowId || 'Unknown'} • Started {formatTime(selected.startedAt)}
+                </div>
+              </div>
+              <div className="list">
+                <div className="row"><span>Status</span><Badge label={executionStatus(selected)} /></div>
+                <div className="row"><span>Mode</span><strong>{selected.mode || '—'}</strong></div>
+                <div className="row"><span>Started</span><strong>{formatTime(selected.startedAt)}</strong></div>
+                <div className="row"><span>Stopped</span><strong>{formatTime(selected.stoppedAt)}</strong></div>
+              </div>
               <div className="actions">
-                <Button className="success" onClick={() => retryMutation.mutate(String(selected.id))}>Retry</Button>
-                <Button className="danger" onClick={() => stopMutation.mutate(String(selected.id))}>Stop</Button>
+                <Button onClick={() => retryMutation.mutate(String(selected.id))}>Retry Now</Button>
+                <Button className="primary">Edit Workflow</Button>
               </div>
             </div>
           ) : <p className="muted">Select an execution to inspect it here.</p>}
