@@ -17,15 +17,17 @@ export function Sidebar() {
 
   return (
     <aside className="sidebar">
-      <Link to="/" className="brand">n8n Dashboard</Link>
-      <p className="muted small">Local-first operations view for your n8n instance.</p>
-      <nav className="nav">
-        {items.map(([to, label]) => (
-          <NavLink key={to} to={to} className={({ isActive }) => cn('nav-link', isActive && 'active')}>
-            {label}
-          </NavLink>
-        ))}
-      </nav>
+      <div className="sidebar-inner">
+        <Link to="/" className="brand">⚡ n8n Dashboard</Link>
+        <p className="muted small">A calm operations layer for your automations.</p>
+        <nav className="nav">
+          {items.map(([to, label]) => (
+            <NavLink key={to} to={to} className={({ isActive }) => cn('nav-link', isActive && 'active')}>
+              {label}
+            </NavLink>
+          ))}
+        </nav>
+      </div>
     </aside>
   );
 }
@@ -34,6 +36,7 @@ export function Topbar({ title, subtitle, actions }: { title: string; subtitle?:
   return (
     <div className="topbar">
       <div>
+        <div className="kicker">Operations</div>
         <h1>{title}</h1>
         {subtitle ? <p className="muted">{subtitle}</p> : null}
       </div>
@@ -42,13 +45,13 @@ export function Topbar({ title, subtitle, actions }: { title: string; subtitle?:
   );
 }
 
-export function Card({ children, className }: PropsWithChildren<{ className?: string }>) {
-  return <section className={cn('card', className)}>{children}</section>;
+export function Card({ children, className, style }: PropsWithChildren<{ className?: string; style?: React.CSSProperties }>) {
+  return <section className={cn('card', className)} style={style}>{children}</section>;
 }
 
 export function StatCard({ label, value, hint }: { label: string; value: string | number; hint?: string }) {
   return (
-    <Card>
+    <Card className="stat-card">
       <div className="stat-label">{label}</div>
       <div className="stat-value">{value}</div>
       {hint ? <div className="stat-hint">{hint}</div> : null}
@@ -66,4 +69,16 @@ export function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
 
 export function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return <input {...props} className={cn('input', props.className)} />;
+}
+
+export function SectionHeader({ title, subtitle, action }: { title: string; subtitle?: string; action?: React.ReactNode }) {
+  return (
+    <div className="section-header">
+      <div>
+        <h3>{title}</h3>
+        {subtitle ? <p className="muted small">{subtitle}</p> : null}
+      </div>
+      {action}
+    </div>
+  );
 }

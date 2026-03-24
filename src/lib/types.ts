@@ -1,5 +1,7 @@
 export type ThemeMode = 'light' | 'dark' | 'system';
 
+export type WorkflowTag = { id: string; name: string };
+
 export type Workflow = {
   id: string;
   name: string;
@@ -8,7 +10,7 @@ export type Workflow = {
   createdAt?: string;
   updatedAt?: string;
   triggerCount?: number;
-  tags?: Array<{ id: string; name: string }>;
+  tags?: WorkflowTag[];
 };
 
 export type Execution = {

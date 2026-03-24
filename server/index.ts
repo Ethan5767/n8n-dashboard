@@ -24,20 +24,23 @@ function baseUrl() {
   return env.N8N_BASE_URL.replace(/\/$/, '');
 }
 
-async function n8nFetch(path: string) {
+async function n8nFetch(path: string, init?: RequestInit) {
   if (!env.N8N_BASE_URL || !env.N8N_API_KEY) {
     throw new Error('Missing N8N_BASE_URL or N8N_API_KEY in .env.local');
   }
   const res = await fetch(`${baseUrl()}/api/v1${path}`, {
+    ...init,
     headers: {
       'X-N8N-API-KEY': env.N8N_API_KEY,
       'Content-Type': 'application/json',
+      ...(init?.headers || {}),
     },
   });
   if (!res.ok) {
     throw new Error(`n8n API error (${res.status})`);
   }
-  return res.json();
+  const text = await res.text();
+  return text ? JSON.parse(text) : { ok: true };
 }
 
 function normalizeWorkflows(raw: any) {
@@ -95,12 +98,48 @@ app.get('/api/workflows/:id', async (req, res) => {
   }
 });
 
+app.post('/api/workflows/:id/activate', async (req, res) => {
+  try {
+    await n8nFetch(`/workflows/${req.params.id}/activate`, { method: 'POST' });
+    res.json({ ok: true });
+  } catch (error) {
+    res.status(500).send(error instanceof Error ? error.message : 'Failed to activate workflow');
+  }
+});
+
+app.post('/api/workflows/:id/deactivate', async (req, res) => {
+  try {
+    await n8nFetch(`/workflows/${req.params.id}/deactivate`, { method: 'POST' });
+    res.json({ ok: true });
+  } catch (error) {
+    res.status(500).send(error instanceof Error ? error.message : 'Failed to deactivate workflow');
+  }
+});
+
 app.get('/api/executions/:id', async (req, res) => {
   try {
     const raw = await n8nFetch(`/executions/${req.params.id}`);
     res.json(raw);
   } catch (error) {
     res.status(500).send(error instanceof Error ? error.message : 'Failed to load execution');
+  }
+});
+
+app.post('/api/executions/:id/retry', async (req, res) => {
+  try {
+    await n8nFetch(`/executions/${req.params.id}/retry`, { method: 'POST' });
+    res.json({ ok: true });
+  } catch (error) {
+    res.status(500).send(error instanceof Error ? error.message : 'Failed to retry execution');
+  }
+});
+
+app.post('/api/executions/:id/stop', async (req, res) => {
+  try {
+    await n8nFetch(`/executions/${req.params.id}/stop`, { method: 'POST' });
+    res.json({ ok: true });
+  } catch (error) {
+    res.status(500).send(error instanceof Error ? error.message : 'Failed to stop execution');
   }
 });
 
